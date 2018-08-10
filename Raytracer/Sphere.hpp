@@ -12,7 +12,7 @@ public:
 
     struct Hit
     {
-        double t;
+        double distance;
         Vector3 position;
         Vector3 normal;
         const Sphere* sphere;
