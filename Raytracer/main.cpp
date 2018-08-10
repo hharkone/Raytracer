@@ -6,7 +6,7 @@
 #include "Ray.hpp"
 #include "Scene.hpp"
 #include "Viewport.hpp"
-
+#include "TgaWriter.hpp"
 
 double packNormal(double v)
 {
@@ -26,9 +26,12 @@ int tonemap(double v)
 int main()
 {
     // Image size
+    const size_t w = 1200;
+    const size_t h = 800;
+    const size_t pixels = w * h;
 
-    const int w = 1200;
-    const int h = 800;
+    std::vector<TgaWriter::RGB_t>* byteArray = new std::vector<TgaWriter::RGB_t>(pixels);
+
     Viewport* viewport = new Viewport(w, h);
 
     std::ofstream ofs("result.ppm");
@@ -44,33 +47,32 @@ int main()
     scene.setCamera(std::shared_ptr<Camera>(camera));
     scene.setViewport(std::shared_ptr<Viewport>(viewport));
 
-    for (int i = 0; i < w * h; i++)
+    for (size_t i = 0; i < pixels; i++)
     {
-        const int x = i % w;
-        const int y = h - i / w;
+        const size_t x = i % w;
+        const size_t y = h - i / w;
 
-        //Ray ray;
-        //ray.origin = Vector3(2.0 * double(x) / w - 1.0, 2.0 * double(y) / h - 1.0, 5.0);
-        //ray.direction = Vector3(0.0, 0.0, -1.0);
-
+        TgaWriter::RGB_t pixel;
         const auto ray = scene.intersect(x, y, 0, 1e+10);
         if (ray)
         {
             const auto r = ray->hit.sphere->reflectance;
-            const auto n = ray->direction;
-            const double dot = Vector3::dot(ray->hit.normal, ray->direction);
+            const auto n = ray->hit.normal;
+            const double dot = Vector3::dot(n, ray->direction);
 
-            ofs << doubleToColor(packNormal(n.x)) << " "
-                << doubleToColor(packNormal(n.y)) << " "
-                << doubleToColor(packNormal(n.z)) << "\n";
+            pixel.red   = doubleToColor(packNormal(n.x));
+            pixel.green = doubleToColor(packNormal(n.y));
+            pixel.blue  = doubleToColor(packNormal(n.z));
         }
         else
         {
-            ofs << "0 0 0\n";
+            pixel.red = pixel.green = pixel.blue = 0;
         }
 
-        
+        byteArray->at(i) = pixel;
     }
+
+    TgaWriter::WriteTGA("result.tga", byteArray, w, h);
 
     return 0;
 }

@@ -22,7 +22,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{E2D6B1C5-72E7-41DD-B842-D63FCA8342F7}</ProjectGuid>
     <RootNamespace>Raytracer</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -119,6 +119,7 @@
     <ClCompile Include="Ray.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Sphere.cpp" />
+    <ClCompile Include="TgaWriter.cpp" />
     <ClCompile Include="Vector3.cpp" />
     <ClCompile Include="Viewport.cpp" />
   </ItemGroup>
@@ -128,6 +129,7 @@
     <ClInclude Include="Ray.hpp" />
     <ClInclude Include="Scene.hpp" />
     <ClInclude Include="Sphere.hpp" />
+    <ClInclude Include="TgaWriter.hpp" />
     <ClInclude Include="Vector3.hpp" />
     <ClInclude Include="Viewport.hpp" />
   </ItemGroup>

@@ -36,7 +36,7 @@ public:
         { Vector3(50.0, 681.6 - .27,81.6)   , 600.0, Vector3(0.0) }, //Skylight
     };
 
-    std::optional<Ray> intersect(int pixelX, int pixelY, double tmin, double tmax) const
+    std::optional<Ray> intersect(size_t pixelX, size_t pixelY, double tmin, double tmax) const
     {
         Ray ray;
         ray.origin = camera->getPosition();
