@@ -6,7 +6,7 @@
 #include "Viewport.hpp"
 #include "TgaWriter.hpp"
 
-#define DEBUG_OUTPUT 1
+#define DEBUG_OUTPUT 0
 #define DEBUG_NORMAL 0
 #define DEBUG_REFLECTANCE 1
 #define DEBUG_VIEWDIRECTION 0
@@ -16,7 +16,7 @@ double packNormal(double v)
     return v * 0.5 + 0.5;
 }
 
-int doubleToColor(double v)
+char doubleToColor(double v)
 {
     return std::min(std::max(int(v * 255), 0), 255);
 };
@@ -61,9 +61,9 @@ int main()
 
             const double dot = Vector3::dot(n, -v);
 
-            pixel.red = doubleToColor(dot);
-            pixel.green = doubleToColor(dot);
-            pixel.blue = doubleToColor(dot);
+            pixel.red   = doubleToColor(r.x * dot);
+            pixel.green = doubleToColor(r.y * dot);
+            pixel.blue  = doubleToColor(r.z * dot);
 
 #if defined(DEBUG_OUTPUT) && (DEBUG_OUTPUT != 0)
 
