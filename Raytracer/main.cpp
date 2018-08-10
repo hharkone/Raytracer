@@ -1,4 +1,5 @@
 #include <vector>
+#include <omp.h>
 
 #include "Vector3.hpp"
 #include "Ray.hpp"
@@ -9,7 +10,8 @@
 
 #define DEBUG_OUTPUT 0
 #define DEBUG_NORMAL 0
-#define DEBUG_REFLECTANCE 1
+#define DEBUG_DIFFUSE 0
+#define DEBUG_EMISSION 1
 #define DEBUG_VIEWDIRECTION 0
 
 double packNormal(double v)
@@ -47,16 +49,21 @@ int main()
     scene.setCamera(std::shared_ptr<Camera>(camera));
     scene.setViewport(std::shared_ptr<Viewport>(viewport));
 
+    #pragma omp parallel for schedule(dynamic, 1)
     for (size_t i = 0; i < pixels; i++)
     {
+        thread_local Random rng(42 + omp_get_thread_num());
         const size_t x = i % w;
         const size_t y = h - i / w;
+
+        double rnd = rng.next();
 
         TgaWriter::RGB_t pixel;
         const auto ray = scene.intersect(x, y, 0, 1e+10);
         if (ray->hit.sphere)
         {
             const auto d = ray->hit.sphere->diffuse;
+            const auto e = ray->hit.sphere->emission;
             const auto n = ray->hit.normal;
             const auto v = ray->direction;
 
@@ -79,6 +86,12 @@ int main()
         pixel.green = doubleToColor(r.y);
         pixel.blue = doubleToColor(r.z);
 #endif // DEBUG_REFLECTANCE
+
+#if defined(DEBUG_EMISSION) && (DEBUG_EMISSION != 0)
+        pixel.red = doubleToColor(e.x);
+        pixel.green = doubleToColor(e.y);
+        pixel.blue = doubleToColor(e.z);
+#endif // DEBUG_EMISSION
 
 #if defined(DEBUG_VIEWDIRECTION) && (DEBUG_VIEWDIRECTION != 0)
         pixel.red = doubleToColor(packNormal(v.x));

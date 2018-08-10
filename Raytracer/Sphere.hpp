@@ -9,6 +9,7 @@ class Sphere
 {
 public:
     Sphere();
+    Sphere(Vector3 p, double r, Vector3 diff);
     Sphere(Vector3 p, double r, Vector3 diff, Vector3 emitt);
 
 
