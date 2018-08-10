@@ -28,14 +28,14 @@ public:
         //{ Vector3( 0.5, 0.0, 0.0), 1.0 },
 
         //Cornell box
-        { Vector3(-1e5 +  1.0, 40.8, 81.6)  , 1e5, Vector3(0.75, 0.25, 0.25) }, //Left wall
-        { Vector3(1e5 + 99.0, 40.8, 81.6)   , 1e5, Vector3(0.25, 0.25, 0.75) }, //Right wall
-        { Vector3(0.0,  0.0, -1e5)         , 1e5,  Vector3(0.75) }, //Back wall
-        { Vector3(50.0, -1e5, 81.6)         , 1e5, Vector3(0.75) }, //Floor
-        { Vector3(50.0, 1e5 + 81.6, 81.6)   , 1e5, Vector3(0.75) }, //Ceiling
-        { Vector3(27.0, 16.5, 47.0)         , 16.5, Vector3(0.8, 0.8, 0.2) }, //Left ball
-        { Vector3(73.0, 16.5, 78.0)         , 16.5, Vector3(0.2, 0.8, 0.8) }, //Right ball
-        { Vector3(50.0, 681.6 - .27,81.6)   , 600.0, Vector3(12.0) }, //Skylight
+        { Vector3(-1e5 +  1.0, 40.8, 81.6)  , 1e5, Vector3(0.75, 0.25, 0.25), Vector3() }, //Left wall
+        { Vector3(1e5 + 99.0, 40.8, 81.6)   , 1e5, Vector3(0.25, 0.25, 0.75), Vector3() }, //Right wall
+        { Vector3(0.0,  0.0, -1e5)          , 1e5, Vector3(0.75), Vector3() }, //Back wall
+        { Vector3(50.0, -1e5, 81.6)         , 1e5, Vector3(0.75), Vector3() }, //Floor
+        { Vector3(50.0, 1e5 + 81.6, 81.6)   , 1e5, Vector3(0.75), Vector3() }, //Ceiling
+        { Vector3(27.0, 16.5, 47.0)         , 16.5, Vector3(0.8, 0.8, 0.2), Vector3() }, //Left ball
+        { Vector3(73.0, 16.5, 78.0)         , 16.5, Vector3(0.2, 0.8, 0.8), Vector3() }, //Right ball
+        { Vector3(50.0, 681.6 - .27,81.6)   , 600.0, Vector3(), Vector3(12.0) }, //Skylight
     };
 
     std::optional<Ray> intersect(size_t pixelX, size_t pixelY, double tmin, double tmax) const

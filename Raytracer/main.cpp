@@ -4,6 +4,7 @@
 #include "Ray.hpp"
 #include "Scene.hpp"
 #include "Viewport.hpp"
+#include "Random.hpp"
 #include "TgaWriter.hpp"
 
 #define DEBUG_OUTPUT 0
@@ -55,15 +56,15 @@ int main()
         const auto ray = scene.intersect(x, y, 0, 1e+10);
         if (ray->hit.sphere)
         {
-            const auto r = ray->hit.sphere->reflectance;
+            const auto d = ray->hit.sphere->diffuse;
             const auto n = ray->hit.normal;
             const auto v = ray->direction;
 
             const double dot = Vector3::dot(n, -v);
 
-            pixel.red   = doubleToColor(r.x * dot);
-            pixel.green = doubleToColor(r.y * dot);
-            pixel.blue  = doubleToColor(r.z * dot);
+            pixel.red   = doubleToColor(d.x * dot);
+            pixel.green = doubleToColor(d.y * dot);
+            pixel.blue  = doubleToColor(d.z * dot);
 
 #if defined(DEBUG_OUTPUT) && (DEBUG_OUTPUT != 0)
 

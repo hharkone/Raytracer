@@ -9,13 +9,13 @@ class Sphere
 {
 public:
     Sphere();
-    Sphere(Vector3 p, double r, Vector3 reflect);
+    Sphere(Vector3 p, double r, Vector3 diff, Vector3 emitt);
 
 
     double radius;
     Vector3 position;
-    Vector3 reflectance;
-    //Vector3 Le;
+    Vector3 diffuse;
+    Vector3 emission;
 
     std::optional<Ray> Sphere::intersect(Ray& ray, double tmin, double tmax) const
     {
