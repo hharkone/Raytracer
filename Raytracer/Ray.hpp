@@ -1,15 +1,15 @@
 #pragma once
 #include "Vector3.hpp"
+#include "Hit.hpp"
 
-class Ray
+
+struct Ray
 {
-public:
-
     Vector3 origin;
     Vector3 direction;
+    Hit hit;
 
-    Ray(void);
+    Ray();
     Ray(Vector3 o, Vector3 d);
-
-    ~Ray();
+    Ray(Vector3 o, Vector3 d, Hit h);
 };

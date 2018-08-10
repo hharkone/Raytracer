@@ -29,9 +29,9 @@ void Camera::updateBasisVectors()
     up = Vector3::cross(forward, side);
 }
 
-void Camera::setFOV(double deg)
+void Camera::setFOV(double degrees)
 {
-    fov = deg * PI / 180.0;
+    fov = degrees * PI / 180.0;
 }
 
 void Camera::setPosition(Vector3& pos)
@@ -46,9 +46,10 @@ void Camera::setPointOfIntrest(Vector3& pos)
     updateBasisVectors();
 }
 
+//Returns FOV in RADIANS
 double Camera::getFOV()
 {
-    return fov / PI * 180.0;
+    return fov;
 }
 
 Vector3 Camera::getPosition()

@@ -2,13 +2,12 @@
 #include <algorithm>
 #include <tuple>
 
+
 class Vector3
 {
 public:
 
     double x, y, z;
-
-    ~Vector3();
 
     Vector3(double v = 0) : Vector3(v, v, v) {}
     Vector3(double x, double y, double z) : x(x), y(y), z(z) {}
@@ -27,11 +26,13 @@ public:
     Vector3 operator*(Vector3& a);
     Vector3 operator/(Vector3& a);
     Vector3 operator-(double scalar);
+    Vector3 operator-();
     Vector3 operator*(double scalar);
     Vector3 operator/(double scalar);
 
     const Vector3 operator+(const Vector3& a) const;
     const Vector3 operator-(const Vector3& a) const;
+    const Vector3 operator-() const;
     const Vector3 operator*(const double scalar) const;
     const Vector3 operator/(const double scalar) const;
 

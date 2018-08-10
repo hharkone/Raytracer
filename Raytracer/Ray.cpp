@@ -1,6 +1,7 @@
 #include "Ray.hpp"
 
-Ray::Ray(void)
+
+Ray::Ray()
 {
 }
 
@@ -10,6 +11,9 @@ Ray::Ray(Vector3 o, Vector3 d)
     direction = d;
 }
 
-Ray::~Ray()
+Ray::Ray(Vector3 o, Vector3 d, Hit h)
 {
+    origin = o;
+    direction = d;
+    hit = h;
 }

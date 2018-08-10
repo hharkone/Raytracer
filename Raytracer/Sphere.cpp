@@ -1,15 +1,13 @@
 #include "Sphere.hpp"
 
+
 Sphere::Sphere()
 {
 }
 
-Sphere::Sphere(Vector3 p, double r)
+Sphere::Sphere(Vector3 p, double r, Vector3 reflect)
 {
     position = p;
     radius = r;
-}
-
-Sphere::~Sphere()
-{
+    reflectance = reflect;
 }

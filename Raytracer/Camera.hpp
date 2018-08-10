@@ -1,6 +1,8 @@
 #pragma once
 #define PI 3.141592
 #include "Vector3.hpp"
+
+
 class Camera
 {
 public:

@@ -7,7 +7,8 @@
 #include "Scene.hpp"
 #include "Viewport.hpp"
 
-double unpack(double v)
+
+double packNormal(double v)
 {
     return v * 0.5 + 0.5;
 }
@@ -15,6 +16,11 @@ double unpack(double v)
 int doubleToColor(double v)
 {
     return std::min(std::max(int(v * 255), 0), 255);
+};
+
+int tonemap(double v)
+{
+    return std::min(std::max(int(std::pow(v, 1 / 2.2) * 255), 0), 255);
 };
 
 int main()
@@ -30,9 +36,9 @@ int main()
 
     Scene scene;
 
-    Vector3 cameraPos = Vector3(5.0);
-    Vector3 cameraIntrest = Vector3(0.0);
-    double cameraFov = 50.0;
+    Vector3 cameraPos = Vector3(50.0, 52.0, 295.6);
+    Vector3 cameraIntrest = cameraPos + Vector3(0.0, -0.042612, -1.0);
+    double cameraFov = 30.0;
     Camera* camera = new Camera(cameraPos, cameraIntrest, cameraFov);
 
     scene.setCamera(std::shared_ptr<Camera>(camera));
@@ -47,14 +53,16 @@ int main()
         //ray.origin = Vector3(2.0 * double(x) / w - 1.0, 2.0 * double(y) / h - 1.0, 5.0);
         //ray.direction = Vector3(0.0, 0.0, -1.0);
 
-        const auto hit = scene.intersect(x, y, 0, 1e+10);
-        if (hit)
+        const auto ray = scene.intersect(x, y, 0, 1e+10);
+        if (ray)
         {
-            const auto n = hit->normal;
+            const auto r = ray->hit.sphere->reflectance;
+            const auto n = ray->direction;
+            const double dot = Vector3::dot(ray->hit.normal, ray->direction);
 
-            ofs << doubleToColor(unpack(n.x)) << " "
-                << doubleToColor(unpack(n.y)) << " "
-                << doubleToColor(unpack(n.z)) << "\n";
+            ofs << doubleToColor(packNormal(n.x)) << " "
+                << doubleToColor(packNormal(n.y)) << " "
+                << doubleToColor(packNormal(n.z)) << "\n";
         }
         else
         {

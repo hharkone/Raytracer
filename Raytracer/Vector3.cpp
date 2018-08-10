@@ -1,6 +1,5 @@
 #include "Vector3.hpp"
 
-Vector3::~Vector3(){}
 
 Vector3 Vector3::operator+(Vector3& a)
 {
@@ -18,13 +17,18 @@ Vector3 Vector3::operator-(Vector3& a)
 {
     return Vector3(x - a.x, y - a.y, z - a.z);
 }
-
+Vector3 Vector3::operator-()
+{
+    return Vector3(x*-1.0, y*-1.0, z*-1.0);
+}
 const Vector3 Vector3::operator-(const Vector3 & a) const
 {
     return Vector3(x - a.x, y - a.y, z - a.z);
 }
-
-
+const Vector3 Vector3::operator-() const
+{
+    return Vector3(x*-1.0, y*-1.0, z*-1.0);
+}
 
 Vector3 Vector3::operator*(Vector3& a)
 {
@@ -40,6 +44,8 @@ Vector3 Vector3::operator-(const double scalar)
 {
     return Vector3(x - scalar, y - scalar, z - scalar);
 }
+
+
 
 
 
@@ -88,8 +94,8 @@ Vector3 Vector3::normalize(Vector3 a)
 
 std::tuple<Vector3, Vector3> Vector3::tangentSpace(const Vector3& n)
 {
-    const double s = std::copysign(1, n.z);
-    const double a = -1 / (s + n.z);
+    const double s = std::copysign(1.0, n.z);
+    const double a = -1.0 / (s + n.z);
     const double b = n.x*n.y*a;
     return
     {
