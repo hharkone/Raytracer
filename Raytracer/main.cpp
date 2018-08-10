@@ -1,5 +1,3 @@
-#include <iostream>
-#include <fstream>
 #include <vector>
 
 #include "Vector3.hpp"
@@ -33,10 +31,6 @@ int main()
     std::vector<TgaWriter::RGB_t>* byteArray = new std::vector<TgaWriter::RGB_t>(pixels);
 
     Viewport* viewport = new Viewport(w, h);
-
-    std::ofstream ofs("result.ppm");
-    ofs << "P3\n" << w << " " << h << "\n255\n";
-
     Scene scene;
 
     Vector3 cameraPos = Vector3(50.0, 52.0, 295.6);
