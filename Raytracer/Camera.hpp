@@ -8,11 +8,6 @@ public:
     Camera(Vector3 pos, Vector3 pointofintrest, double fov);
     ~Camera();
 
-    //Basis vectors
-    Vector3 forward;
-    Vector3 side;
-    Vector3 up;
-
     void updateBasisVectors();
     void setFOV(double f);
     void setPosition(Vector3& pos);
@@ -22,10 +17,18 @@ public:
     Vector3 getPosition();
     Vector3 getPointOfIntrest();
 
+    Vector3 getForward();
+    Vector3 getSide();
+    Vector3 getUp();
+
 private:
     Vector3 position;
     Vector3 pointOfIntrest;
     double fov = 50.0 * PI / 180.0;
     const Vector3 worldUp = Vector3(0.0, 1.0, 0.0);
+    // Basis vectors
+    Vector3 forward;
+    Vector3 side;
+    Vector3 up;
 };
 

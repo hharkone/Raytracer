@@ -60,3 +60,18 @@ Vector3 Camera::getPointOfIntrest()
 {
     return pointOfIntrest;
 }
+
+Vector3 Camera::getForward()
+{
+    return forward;
+}
+
+Vector3 Camera::getSide()
+{
+    return side;
+}
+
+Vector3 Camera::getUp()
+{
+    return up;
+}

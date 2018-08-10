@@ -34,7 +34,7 @@ public:
             const double rpy = 2.0 * pixelY / viewport->getHeight() - 1;
             const Vector3 w = Vector3::normalize(Vector3(viewport->getAspect() * tf * rpx, tf * rpy, -1.0));
 
-            return camera->side*w.x + camera->up*w.y + camera->forward*w.z;
+            return camera->getSide()*w.x + camera->getUp()*w.y + camera->getForward()*w.z;
         }();
 
         std::optional<Sphere::Hit> minHit;
