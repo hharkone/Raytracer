@@ -6,6 +6,11 @@
 #include "Viewport.hpp"
 #include "TgaWriter.hpp"
 
+#define DEBUG_OUTPUT 1
+#define DEBUG_NORMAL 0
+#define DEBUG_REFLECTANCE 1
+#define DEBUG_VIEWDIRECTION 0
+
 double packNormal(double v)
 {
     return v * 0.5 + 0.5;
@@ -48,15 +53,40 @@ int main()
 
         TgaWriter::RGB_t pixel;
         const auto ray = scene.intersect(x, y, 0, 1e+10);
-        if (ray)
+        if (ray->hit.sphere)
         {
             const auto r = ray->hit.sphere->reflectance;
             const auto n = ray->hit.normal;
-            const double dot = Vector3::dot(n, ray->direction);
+            const auto v = ray->direction;
 
-            pixel.red   = doubleToColor(packNormal(n.x));
-            pixel.green = doubleToColor(packNormal(n.y));
-            pixel.blue  = doubleToColor(packNormal(n.z));
+            const double dot = Vector3::dot(n, -v);
+
+            pixel.red = doubleToColor(dot);
+            pixel.green = doubleToColor(dot);
+            pixel.blue = doubleToColor(dot);
+
+#if defined(DEBUG_OUTPUT) && (DEBUG_OUTPUT != 0)
+
+#if defined(DEBUG_NORMAL) && (DEBUG_NORMAL != 0)
+        pixel.red = doubleToColor(packNormal(n.x));
+        pixel.green = doubleToColor(packNormal(n.y));
+        pixel.blue = doubleToColor(packNormal(n.z));
+#endif // DEBUG_NORMAL
+
+#if defined(DEBUG_REFLECTANCE) && (DEBUG_REFLECTANCE != 0)
+        pixel.red = doubleToColor(r.x);
+        pixel.green = doubleToColor(r.y);
+        pixel.blue = doubleToColor(r.z);
+#endif // DEBUG_REFLECTANCE
+
+#if defined(DEBUG_VIEWDIRECTION) && (DEBUG_VIEWDIRECTION != 0)
+        pixel.red = doubleToColor(packNormal(v.x));
+        pixel.green = doubleToColor(packNormal(v.y));
+        pixel.blue = doubleToColor(packNormal(v.z));
+#endif // DEBUG_VIEWDIRECTION
+
+#endif // DEBUG_OUTPUT
+
         }
         else
         {

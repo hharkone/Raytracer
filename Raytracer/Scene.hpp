@@ -7,6 +7,7 @@
 #include "Camera.hpp"
 #include "Viewport.hpp"
 
+
 class Scene
 {
 public:
@@ -22,17 +23,18 @@ public:
     std::vector<Sphere> spheres
     {
         //1 Two test spheres
-        //{ Vector3(-0.5, 0.0, 0.0), 1.0 },
+        //{ Vector3(-0.5, 0.0, 0.0), 1.0, Vector3(0.0) },
+        //{ Vector3(0.0, 0.0, -10001.0), 10000.0, Vector3(0.0) },
         //{ Vector3( 0.5, 0.0, 0.0), 1.0 },
 
         //Cornell box
         { Vector3(-1e5 +  1.0, 40.8, 81.6)  , 1e5, Vector3(0.0) }, //Left wall
         { Vector3(1e5 + 99.0, 40.8, 81.6)   , 1e5, Vector3(1.0) }, //Right wall
-        { Vector3(50.0,  40.8, 1e5)         , 1e5, Vector3(0.0) }, //Back wall
+        { Vector3(0.0,  0.0, -1e5)         , 1e5, Vector3(0.0) }, //Back wall
         { Vector3(50.0, -1e5, 81.6)         , 1e5, Vector3(0.5) }, //Floor
-        { Vector3(50.0, 1e5 + 81.6, 81.6)   , 1e5, Vector3(0.0) }, //Ceiling
-        { Vector3(27.0, 16.5, 47.0)         , 16.5, Vector3(0.0) }, //Left ball
-        { Vector3(73.0, 16.5, 78.0)         , 16.5, Vector3(0.2) }, //Right ball
+        { Vector3(50.0, 1e5 + 81.6, 81.6)   , 1e5, Vector3(1.0) }, //Ceiling
+        { Vector3(27.0, 16.5, 47.0)         , 16.5, Vector3(1.0, 0.0, 0.0) }, //Left ball
+        { Vector3(73.0, 16.5, 78.0)         , 16.5, Vector3(0.0, 1.0, 0.0) }, //Right ball
         { Vector3(50.0, 681.6 - .27,81.6)   , 600.0, Vector3(0.0) }, //Skylight
     };
 
@@ -55,8 +57,10 @@ public:
         {
             const auto h = sphere.intersect(ray, tmin, tmax);
             if (!h) { continue; }
-            minHit->hit = h->hit;
-            tmax = minHit->hit.distance;
+            ray.hit = h->hit;
+            tmax = ray.hit.distance;
+
+            minHit = h;
         }
         if (minHit)
         {

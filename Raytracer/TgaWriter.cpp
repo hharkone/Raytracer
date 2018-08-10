@@ -29,7 +29,7 @@ bool TgaWriter::WriteTGA(const std::string& filename, std::vector<RGB_t>* data, 
         {
             int test = 0;
         }
-        for (int x = 0; x < width; x++)
+        for (int x = 0; x < (int)width; x++)
         {
             if (x == 1199)
             {
