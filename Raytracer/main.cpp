@@ -14,16 +14,30 @@
 #define DEBUG_EMISSION 1
 #define DEBUG_VIEWDIRECTION 0
 
-double packNormal(double v)
+#define SAMPLES_PER_PIXEL 10
+#define SAMPLES_DEPTH 2
+
+double packFloat(double v)
 {
     return v * 0.5 + 0.5;
 }
 
-char doubleToColor(double v)
+Vector3 packNormal(Vector3 v)
+{
+    return Vector3(packFloat(v.x), packFloat(v.y), packFloat(v.z));
+}
+/*
+unsigned char doubleToByte(double v)
 {
     return std::min(std::max(int(v * 255), 0), 255);
-};
+}
 
+TgaWriter::RGB_t vectorToColor(Vector3 v)
+{
+    TgaWriter::RGB_t out{ doubleToByte(v.x), doubleToByte(v.y), doubleToByte(v.z) };
+    return out;
+};
+*/
 int tonemap(double v)
 {
     return std::min(std::max(int(std::pow(v, 1 / 2.2) * 255), 0), 255);
@@ -41,6 +55,7 @@ int main()
     Viewport* viewport = new Viewport(w, h);
     Scene scene;
 
+
     Vector3 cameraPos = Vector3(50.0, 52.0, 295.6);
     Vector3 cameraIntrest = cameraPos + Vector3(0.0, -0.042612, -1.0);
     double cameraFov = 30.0;
@@ -49,68 +64,102 @@ int main()
     scene.setCamera(std::shared_ptr<Camera>(camera));
     scene.setViewport(std::shared_ptr<Viewport>(viewport));
 
+    std::vector<Vector3> I(pixels);
     #pragma omp parallel for schedule(dynamic, 1)
     for (size_t i = 0; i < pixels; i++)
     {
         thread_local Random rng(42 + omp_get_thread_num());
         const size_t x = i % w;
-        const size_t y = h - i / w;
+        const size_t y = i / w;
 
-        double rnd = rng.next();
+        Vector3 floatPixel(0.0, 0.0, 0.0);
 
-        TgaWriter::RGB_t pixel;
-        const auto ray = scene.intersect(x, y, 0, 1e+10);
-        if (ray->hit.sphere)
+        for (int j = 0; j < SAMPLES_PER_PIXEL; j++)
         {
-            const auto d = ray->hit.sphere->diffuse;
-            const auto e = ray->hit.sphere->emission;
-            const auto n = ray->hit.normal;
-            const auto v = ray->direction;
+            //Construct initial ray from camera
+            Ray ray;
+            ray.origin = camera->getPosition();
+            ray.direction = [&]()
+            {
+                const double tf = std::tan(camera->getFOV() * 0.5);
+                const double rpx = 2.0 * (x + rng.next()) / viewport->getWidth() - 1.0;
+                const double rpy = 2.0 * (y + rng.next()) / viewport->getHeight() - 1.0;
+                const Vector3 w = Vector3::normalize(Vector3(viewport->getAspect() * tf * rpx, tf * rpy, -1.0));
 
-            const double dot = Vector3::dot(n, -v);
+                return camera->getSide()*w.x + camera->getUp()*w.y + camera->getForward()*w.z;
+            }();
 
-            pixel.red   = doubleToColor(d.x * dot);
-            pixel.green = doubleToColor(d.y * dot);
-            pixel.blue  = doubleToColor(d.z * dot);
+            //Bounce
+            Vector3 sampleColor(0.0), traceEnergy(1.0);
+            for (int depth = 0; depth < SAMPLES_DEPTH; depth++)
+            {
+                // Intersection
+                const auto trace = scene.intersect(ray, 1e-4, 1e+10, rng);
+                if (!trace->hit.sphere)
+                {
+                    break;
+                }
+                // Add contribution
+                sampleColor = sampleColor + traceEnergy * trace->hit.sphere->emission;
+                // Update next direction
+                ray.origin = trace->origin;
+                ray.direction = [&]()
+                {
+                    // Sample direction in local coordinates
+                    const auto n = Vector3::dot(trace->hit.normal, -ray.direction) > 0 ? trace->hit.normal : -trace->hit.normal;
+                    const auto& t = Vector3::tangentSpace(n);
+                    //const auto& [u, v] = Vector3::tangentSpace(n);
+
+                    const auto d = [&]()
+                    {
+                        const double r = sqrt(rng.next());
+                        const double t = 2.0 * PI * rng.next();
+                        const double x = r * cos(t);
+                        const double y = r * sin(t);
+                        return Vector3(x, y, sqrt(std::max(.0,1.0-x*x-y*y)));
+                    }();
+                    // Convert to world coordinates
+                    return std::get<0>(t) * d.x + std::get<1>(t) * d.y + n * d.z;
+                }();
+                // Update throughput
+                traceEnergy = traceEnergy * trace->hit.sphere->diffuse;
+                if (std::max({ traceEnergy.x, traceEnergy.y, traceEnergy.z }) == 0)
+                {
+                    //If trace has no contribution we can stop
+                    break;
+                }
+            }
 
 #if defined(DEBUG_OUTPUT) && (DEBUG_OUTPUT != 0)
 
 #if defined(DEBUG_NORMAL) && (DEBUG_NORMAL != 0)
-        pixel.red = doubleToColor(packNormal(n.x));
-        pixel.green = doubleToColor(packNormal(n.y));
-        pixel.blue = doubleToColor(packNormal(n.z));
+                floatPixel = packNormal(n);
 #endif // DEBUG_NORMAL
 
 #if defined(DEBUG_REFLECTANCE) && (DEBUG_REFLECTANCE != 0)
-        pixel.red = doubleToColor(r.x);
-        pixel.green = doubleToColor(r.y);
-        pixel.blue = doubleToColor(r.z);
+                floatPixel = r;
 #endif // DEBUG_REFLECTANCE
 
 #if defined(DEBUG_EMISSION) && (DEBUG_EMISSION != 0)
-        pixel.red = doubleToColor(e.x);
-        pixel.green = doubleToColor(e.y);
-        pixel.blue = doubleToColor(e.z);
+                floatPixel = e;
 #endif // DEBUG_EMISSION
 
 #if defined(DEBUG_VIEWDIRECTION) && (DEBUG_VIEWDIRECTION != 0)
-        pixel.red = doubleToColor(packNormal(v.x));
-        pixel.green = doubleToColor(packNormal(v.y));
-        pixel.blue = doubleToColor(packNormal(v.z));
+                floatPixel = packNormal(v);
 #endif // DEBUG_VIEWDIRECTION
 
-#endif // DEBUG_OUTPUT
+#else // DEBUG_OUTPUT
 
-        }
-        else
-        {
-            pixel.red = pixel.green = pixel.blue = 0;
+                //Add sample
+            I[i] = I[i] + sampleColor / SAMPLES_PER_PIXEL;
+
+#endif
         }
 
-        byteArray->at(i) = pixel;
+        //I[i] = floatPixel;
     }
 
-    TgaWriter::WriteTGA("result.tga", byteArray, w, h);
+    TgaWriter::WriteTGA("result.tga", I, w, h);
 
     return 0;
 }

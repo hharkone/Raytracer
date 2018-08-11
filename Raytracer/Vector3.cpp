@@ -6,10 +6,21 @@ Vector3 Vector3::operator+(Vector3& a)
     return Vector3(x + a.x, y + a.y, z + a.z);
 }
 
+Vector3 Vector3::operator+=(Vector3 & a)
+{
+    return Vector3(x += a.x, y += a.y, z += a.z);
+}
+
+const Vector3 Vector3::operator+=(const Vector3 & a) 
+{
+    return Vector3(x += a.x, y += a.y, z += a.z);
+}
+
 const Vector3 Vector3::operator+(const Vector3 & a) const
 {
     return Vector3(x + a.x, y + a.y, z + a.z);
 }
+
 
 
 
@@ -60,10 +71,19 @@ const Vector3 Vector3::operator*(double scalar) const
     return Vector3(x * scalar, y * scalar, z * scalar);
 }
 
+const Vector3 Vector3::operator*(const Vector3 & a) const
+{
+    return Vector3(x * a.x, y * a.y, z * a.z);
+}
+
 
 
 
 Vector3 Vector3::operator/(double scalar)
+{
+    return Vector3(x / scalar, y / scalar, z / scalar);
+}
+Vector3 Vector3::operator/=(double scalar)
 {
     return Vector3(x / scalar, y / scalar, z / scalar);
 }

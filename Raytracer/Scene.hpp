@@ -5,20 +5,20 @@
 #include "Ray.hpp"
 #include "Sphere.hpp"
 #include "Camera.hpp"
+#include "Random.hpp"
 #include "Viewport.hpp"
 
 
 class Scene
 {
 public:
-    Scene();
-    ~Scene();
 
     void setCamera(std::shared_ptr<Camera> c);
     std::shared_ptr<Camera> getCamera();
 
     void setViewport(std::shared_ptr<Viewport> c);
     std::shared_ptr<Viewport> getViewport();
+
 
     std::vector<Sphere> spheres
     {
@@ -33,32 +33,24 @@ public:
         { Vector3(0.0,  0.0, -1e5)          , 1e5, Vector3(0.75) }, //Back wall
         { Vector3(50.0, -1e5, 81.6)         , 1e5, Vector3(0.75) }, //Floor
         { Vector3(50.0, 1e5 + 81.6, 81.6)   , 1e5, Vector3(0.75) }, //Ceiling
-        { Vector3(27.0, 16.5, 47.0)         , 16.5, Vector3(0.8, 0.8, 0.2) }, //Left ball
-        { Vector3(73.0, 16.5, 78.0)         , 16.5, Vector3(0.2, 0.8, 0.8) }, //Right ball
+        { Vector3(27.0, 16.5, 47.0)         , 16.5, Vector3(0.7) }, //Left ball
+        { Vector3(73.0, 16.5, 78.0)         , 16.5, Vector3(0.7) }, //Right ball
         { Vector3(50.0, 681.6 - .27,81.6)   , 600.0, Vector3(), Vector3(12.0) }, //Skylight
     };
 
-    std::optional<Ray> intersect(size_t pixelX, size_t pixelY, double tmin, double tmax) const
+    std::optional<Ray> intersect(const Ray& ray, double tmin, double tmax, Random& rng) const
     {
-        Ray ray;
-        ray.origin = camera->getPosition();
-        ray.direction = [&]()
-        {
-            const double tf = std::tan(camera->getFOV() * 0.5);
-            const double rpx = 2.0 * pixelX / viewport->getWidth() - 1.0;
-            const double rpy = 2.0 * pixelY / viewport->getHeight() - 1.0;
-            const Vector3 w = Vector3::normalize(Vector3(viewport->getAspect() * tf * rpx, tf * rpy, -1.0));
-
-            return camera->getSide()*w.x + camera->getUp()*w.y + camera->getForward()*w.z;
-        }();
-
         std::optional<Ray> minHit;
         for (const auto& sphere : spheres)
         {
             const auto h = sphere.intersect(ray, tmin, tmax);
             if (!h) { continue; }
-            ray.hit = h->hit;
-            tmax = ray.hit.distance;
+
+            minHit->hit = h->hit;
+            tmax = minHit->hit.distance;
+
+            //ray.hit = h->hit;
+            //tmax = ray.hit.distance;
 
             minHit = h;
         }
@@ -69,9 +61,9 @@ public:
             minHit->hit.normal = (minHit->hit.position - hitSphere->position) / hitSphere->radius;
         }
 
-        ray.hit = minHit->hit;
+        minHit->origin = minHit->hit.position;
 
-        return ray;
+        return minHit;
     }
     
 private:

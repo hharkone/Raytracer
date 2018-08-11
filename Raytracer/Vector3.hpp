@@ -21,7 +21,9 @@ public:
         return (&x)[i];
     }
 
+    //Vector3 operator=(Vector3& a);
     Vector3 operator+(Vector3& a);
+    Vector3 operator+=(Vector3& a);
     Vector3 operator-(Vector3& a);
     Vector3 operator*(Vector3& a);
     Vector3 operator/(Vector3& a);
@@ -29,15 +31,18 @@ public:
     Vector3 operator-();
     Vector3 operator*(double scalar);
     Vector3 operator/(double scalar);
+    Vector3 operator/=(double scalar);
 
     const Vector3 operator+(const Vector3& a) const;
+    const Vector3 operator+=(const Vector3& a);
     const Vector3 operator-(const Vector3& a) const;
     const Vector3 operator-() const;
     const Vector3 operator*(const double scalar) const;
+    const Vector3 operator*(const Vector3& a) const;
     const Vector3 operator/(const double scalar) const;
 
     static double dot(Vector3 a, Vector3 b);
     static Vector3 cross(Vector3 a, Vector3 b);
     static Vector3 normalize(Vector3 a);
-    std::tuple<Vector3, Vector3> tangentSpace(const Vector3& n);
+    static std::tuple<Vector3, Vector3> tangentSpace(const Vector3& n);
 };

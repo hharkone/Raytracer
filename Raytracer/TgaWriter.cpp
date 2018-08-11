@@ -1,14 +1,19 @@
-#include <vector>
 #include "TgaWriter.hpp"
+
+unsigned char doubleToByte(double v)
+{
+    return std::min(std::max(int(v * 255), 0), 255);
+}
 
 // It is presumed that the image is stored in memory as 
 // RGB_t data[ height ][ width ]
 // where lines are top to bottom and columns are left to right
 // (the same way you view the image on the display)
-bool TgaWriter::WriteTGA(const std::string& filename, std::vector<RGB_t>* data, unsigned width, unsigned height)
+bool TgaWriter::WriteTGA(const std::string& filename, std::vector<Vector3>& data, unsigned width, unsigned height)
 {
     // The routine makes all the appropriate adjustments to match the TGA format specification.
     std::ofstream tgafile(filename.c_str(), std::ios::binary);
+    std::ios::sync_with_stdio(false);
     if (!tgafile) return false;
 
     // The image header
@@ -22,23 +27,11 @@ bool TgaWriter::WriteTGA(const std::string& filename, std::vector<RGB_t>* data, 
 
     tgafile.write((const char*)header, 18);
 
-    // The image data is stored bottom-to-top, left-to-right
-    for (int y = height - 1; y >= 0; y--)
+    for (const Vector3& i : data)
     {
-        if (y == 0)
-        {
-            int test = 0;
-        }
-        for (int x = 0; x < (int)width; x++)
-        {
-            if (x == 1199)
-            {
-                int test = 0;
-            }
-            tgafile.put((char)data->at((y * width) + x).blue);
-            tgafile.put((char)data->at((y * width) + x).green);
-            tgafile.put((char)data->at((y * width) + x).red);
-        }
+        tgafile.put(doubleToByte(i.x));
+        tgafile.put(doubleToByte(i.y));
+        tgafile.put(doubleToByte(i.z));
     }
 
     // The file footer. This part is totally optional.

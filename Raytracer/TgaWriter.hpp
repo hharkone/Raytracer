@@ -1,7 +1,9 @@
 #pragma once
 #include <fstream>
 #include <string>
+#include <vector>
 
+#include "Vector3.hpp"
 
 class TgaWriter
 {
@@ -14,6 +16,6 @@ public:
     }
     RGB_t;
 
-    static bool WriteTGA(const std::string& filename, std::vector<RGB_t>* data, unsigned width, unsigned height);
+    static bool WriteTGA(const std::string& filename, std::vector<Vector3>& data, unsigned width, unsigned height);
 };
 
