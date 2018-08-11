@@ -15,7 +15,7 @@
 #define DEBUG_VIEWDIRECTION 0
 
 #define SAMPLES_PER_PIXEL 10
-#define SAMPLES_DEPTH 2
+#define SAMPLES_DEPTH 3
 
 double packFloat(double v)
 {
@@ -26,28 +26,12 @@ Vector3 packNormal(Vector3 v)
 {
     return Vector3(packFloat(v.x), packFloat(v.y), packFloat(v.z));
 }
-/*
-unsigned char doubleToByte(double v)
-{
-    return std::min(std::max(int(v * 255), 0), 255);
-}
-
-TgaWriter::RGB_t vectorToColor(Vector3 v)
-{
-    TgaWriter::RGB_t out{ doubleToByte(v.x), doubleToByte(v.y), doubleToByte(v.z) };
-    return out;
-};
-*/
-int tonemap(double v)
-{
-    return std::min(std::max(int(std::pow(v, 1 / 2.2) * 255), 0), 255);
-};
 
 int main()
 {
     // Image size
-    const size_t w = 1200;
-    const size_t h = 800;
+    const size_t w = 800;
+    const size_t h = 640;
     const size_t pixels = w * h;
 
     std::vector<TgaWriter::RGB_t>* byteArray = new std::vector<TgaWriter::RGB_t>(pixels);
@@ -65,7 +49,7 @@ int main()
     scene.setViewport(std::shared_ptr<Viewport>(viewport));
 
     std::vector<Vector3> I(pixels);
-    #pragma omp parallel for schedule(dynamic, 1)
+    #pragma omp parallel for schedule(static, 1)
     for (size_t i = 0; i < pixels; i++)
     {
         thread_local Random rng(42 + omp_get_thread_num());
@@ -150,7 +134,7 @@ int main()
 
 #else // DEBUG_OUTPUT
 
-                //Add sample
+            //Add sample
             I[i] = I[i] + sampleColor / SAMPLES_PER_PIXEL;
 
 #endif

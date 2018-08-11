@@ -5,6 +5,23 @@ unsigned char doubleToByte(double v)
     return std::min(std::max(int(v * 255), 0), 255);
 }
 
+double tonemap(double v)
+{
+    return std::pow(v, 0.45454);
+}
+
+void tonemap(Vector3& v)
+{
+    v.x = tonemap(v.x);
+    v.y = tonemap(v.y);
+    v.z = tonemap(v.z);
+}
+
+Vector3 tonemap(Vector3 v)
+{
+    return Vector3(tonemap(v.x), tonemap(v.y), tonemap(v.z));
+}
+
 // It is presumed that the image is stored in memory as 
 // RGB_t data[ height ][ width ]
 // where lines are top to bottom and columns are left to right
@@ -29,9 +46,9 @@ bool TgaWriter::WriteTGA(const std::string& filename, std::vector<Vector3>& data
 
     for (const Vector3& i : data)
     {
-        tgafile.put(doubleToByte(i.x));
-        tgafile.put(doubleToByte(i.y));
-        tgafile.put(doubleToByte(i.z));
+        tgafile.put(doubleToByte(tonemap(i.x)));
+        tgafile.put(doubleToByte(tonemap(i.y)));
+        tgafile.put(doubleToByte(tonemap(i.z)));
     }
 
     // The file footer. This part is totally optional.
